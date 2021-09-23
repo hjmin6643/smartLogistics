@@ -1,0 +1,61 @@
+server:
+  port: 8089
+  servlet:
+    session:
+      timeout: 60m
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  error:
+    include-exception: false
+    include-stacktrace: never
+    whitelabel.enabled: false
+
+
+
+spring:
+  profiles:
+    active: prod
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://192.168.0.143:3306/logistics
+    username: nexmore
+    password: nex147200
+    dbcp2:
+      test-on-borrow: true
+      validation-query: select 1
+  devtools:
+    livereload:
+      enabled: true
+  thymeleaf:
+    mode: HTML
+    enabled: true
+    encoding: UTF-8
+    cache: false
+
+
+
+logging:
+  config:
+
+--- #local
+spring:
+  profiles: local
+  datasource:
+    url: jdbc:mariadb://192.168.0.143:3306/logistics
+  thymeleaf:
+    cache: false
+server:
+  ssl:
+    key-store: keystore.p12
+    key-store-password: nex147200
+    key-store-type: PKCS12
+    key-alias: springbootssl
+--- #prod
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:mariadb://192.168.0.143:3306/logistics
+  thymeleaf:
+    cache: true

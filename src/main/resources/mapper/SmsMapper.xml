@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexmore.smartLogistics.mapper.SmsMapper">
+
+    <select id="selectSmsList" resultType="com.nexmore.smartLogistics.domain.SmsDTO">
+
+        SELECT NO, MOBILE_NO, MESSAGE,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM SMS_NOTICE_TB
+        ORDER BY REG_DATE DESC
+
+    </select>
+    <select id="selectSmsListNo" parameterType="com.nexmore.smartLogistics.domain.SmsDTO" resultType="com.nexmore.smartLogistics.domain.SmsDTO">
+
+        SELECT NO, MOBILE_NO, MESSAGE,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM SMS_NOTICE_TB
+        WHERE NO = #{no}
+        ORDER BY REG_DATE DESC
+
+    </select>
+
+
+
+</mapper>

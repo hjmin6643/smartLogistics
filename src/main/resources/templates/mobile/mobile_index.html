@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/mobile_default" >
+
+<th:block layout:fragment="content">
+
+
+    <div class="container">
+
+        <form name="frmReg" action="#" method="POST" >
+
+
+
+            <div class="register_write" >
+
+               <h2 style="color:#000000; text-align: center; font-weight: bold;">물품 등록</h2>
+                <table style="border: 1px solid ;" class="tbl_register tbl_fixed" summary="물품 등록">
+
+                    <caption>물품 등록 </caption>
+                    <colgroup>
+                        <col style="width:30%;">
+                        <col style="width:75%;">
+                    </colgroup>
+                    <tbody>
+
+
+                    <tr>
+                        <th scope="row">지역 </th>
+                        <td>
+                            <input type="text" class="ipt_full" name="usr_nm" id="usr_nm" title="지역" maxlength="40" value="김천시청" readonly>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th scope="row">배송 기사</th>
+                        <td>
+                            <input type="text" class="ipt_full" name="usr_id" id="delivery" title="배송 기사" maxlength="100" style="" value="홍길동" readonly>
+
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th scope="row">송장 번호</th>
+                        <td>
+                            <input type="text" class="ipt_full" name="usr_id" id="usr_id" title="회원ID" maxlength="100" style="display: inline-block; float: left; width: 130px;" value="">
+                            <a style="display: inline-block; width:160px; margin-left: 10px;margin-top: -5px; " href="#" class="btnS btnDgray" id="btn-duplicate">코드 촬영</a>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th scope="row">배송지 정보 </th>
+                        <td>
+                            <input type="text" class="ipt_full" name="usr_pw" id="usr_pw" title="배송지" maxlength="100" style="" value="경상북도 김천시 김천시청" readonly>
+                            <input type="text" class="ipt_full" name="selectInfo" id="Info" title="배송지 정보" value="" style="width:80px; margin-top:5px;">
+                            <span class="selectBox info" style="margin-left: 3px; z-index: 100;  color:#000000;margin-top: 5px;">
+										<select id="selectInfo" name="selectInfo" title="이메일 도메인 선택" onchange="changeInfo();" style="">
+											<option value="">직접입력</option>
+											<option value="사회복지과">사회복지과</option>
+											<option value="교통행정과">교통행정과</option>
+											<option value="상하수도과">상하수도과</option>
+
+
+										</select>
+									</span>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th scope="row">수취인 연락처 </th>
+                        <td>
+                            <input type="text" class="ipt_full" name="usr_pw_confirm" id="usr_pw_confirm" title="비밀번호 확인" maxlength="100" style="">
+                            <a style="display: inline-block; width:160px; margin-left: 10px;margin-top: -5px; " href="tel:010-9195-6643" class="btnS btnDgray" id="tel">전화걸기</a>
+                        </td>
+                    </tr>
+
+
+
+
+
+
+                    </tbody>
+                </table>
+
+
+
+                <div style="" class="reg-buttons buttons-c">
+                    <a href="#" class="btnL btnDgray" id="btn-confirm">등록 완료</a>
+                </div>
+
+
+            </div>
+        </form>
+    </div>
+
+<script>
+
+    var changeInfo = function(){
+        var info = $("#selectInfo").val();
+        if ('' != info) {
+            $("#selectInfo").val(info).prop('disabled', true);
+        } else {
+            $("#selectInfo").val(info).prop('disabled', null);
+        }
+        $("#Info").val(info);
+    };
+</script>
+
+
+
+
+</th:block>
+</html>

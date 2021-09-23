@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+<th:block layout:fragment="content">
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:25px;">김천시청 배송 현황 <span style="color:#000000">(실내 자율 주행)</span></h1>
+
+    </div>
+
+    <section class="content p-0">
+        <div class="container-fluid p-0 pt-2">
+            <div id="map" class="position-absolute w-100" style="margin-bottom:-10px; height:50%!important;">
+                <div class="card shadow position-absolute p-1" style="top:34px; left:27%; width:300px; background-color:#a8c0ff; height:200px; font-size:12px; z-index:20;border-radius: 2em;">
+                    <h3 style="text-align: center; color:#000000; font-weight: bold;">김천시청 <span style="float: right; margin-right: 20px; margin-top:5px;" id="kimAll"></span></h3>
+                    <div class="card-body mb-4">
+                        <canvas class="m-auto" id="kimChart"  style="width:20vw;height:20vh;"></canvas>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div style="margin-top:29%;" class="card card-outline card-gray-dark shadow mb-4">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span style="font-size: large" class="text-primary" id="kimStatus"></span>
+                </h3>
+
+            </div>
+            <div class="card-body">
+                <div class="mb-3 flex">
+                    <label class="mt-2 mr-2">날짜 : </label>
+                    <div class="input-group date datepicker-input" id="changeStartDate" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#changeStartDate" th:value="${startDate}"/>
+                        <div class="input-group-append" data-target="#changeStartDate" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <p class="m-2"> ~ </p>
+                    <div class="input-group date datepicker-input" id="changeEndDate" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#changeEndDate" th:value="${endDate}"/>
+                        <div class="input-group-append" data-target="#changeEndDate" data-toggle="datetimepicker">
+                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline-dark ml-3" id="accident" onclick="selectDate()">조회</button>
+                </div>
+                <div class="table-responsive overflow-hidden">
+                    <div class="d-inline-block w-100">
+                        <table class="table table-bordered table-striped table-hover nowrap w-100" id="deliverydataTable">
+                            <thead>
+                            <tr>
+                                <th style="color: #000000;" class="text-center">송장번호</th>
+                                <th style="color: #000000;" class="text-center">배송지</th>
+                                <th style="color: #000000;" class="text-center">배송현황</th>
+                                <th style="color: #000000;" class="text-center">등록일</th>
+                            </tr>
+                            </thead>
+                            <tbody style="color:#000000"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <link href="../static/js/dataTables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="../static/js/dataTables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <link href="../static/js/fontawesome-free/css/all.css" rel="stylesheet">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=caa376afbc1b5fc1424a4dcdc8079e0a&libraries=clusterer"></script>
+    <script src="../static/js/chart/Chart.js"></script>
+    <script src="../static/js/chart/Chart.min.js"></script>
+    <script src="../static/js/chart/chartjs-plugin-labels.js"></script>
+    <script src="../static/js/chart/chartjs-plugin-labels.min.js"></script>
+    <script src="../static/js/dataTables/jquery.dataTables.js" defer></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js" defer></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js" defer></script>
+    <script src="../static/js/dataTables/jszip.min.js" defer></script>
+
+
+
+  <!--  <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+    <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js" defer></script>-->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var kimCountList =  [[${kimCountList}]];
+        var kimCountAll = [[${kimCountAll}]];
+        /*var slopeMapList = [[${slopeMapList}]];
+        var pumpMapList = [[${pumpMapList}]];
+        var rainfall = [[${rainfall}]];
+        var manholeList = [[${manholeList}]];*/
+        /*]]>*/
+        var kimCount = [];
+        var kimStatus =[];
+        for(var i=0, size=kimCountList.length; i<size; i++) {
+            kimCount.push(Number(kimCountList[i].count));
+            kimStatus.push(Number(kimCountList[i].count));
+        }
+        console.log(kimStatus);
+        //전체 4건(배송 중 2건/완료 2건)
+        $("#kimStatus").text("전체 "+kimCountAll[0].count + "건 (배송 등록 " +kimStatus[0] + "건/ 배송 중 "+ kimStatus[1] + "건/ 배송 완료 "+ kimStatus[2] +"건 )");
+        $("#kimAll").text(" 전체 : "+kimCountAll[0].count + "건");
+        kimchart(kimCount);
+
+        $(function () {
+
+                $(".date").datetimepicker({
+                    format: 'yyyy-MM-DD',
+                    width: 24,
+                    locale:'ko',
+                    minDate: moment().subtract(1, 'year'),
+                    dayViewHeaderFormat: 'YYYY년 MMMM'
+                });
+
+                var styleObj = {
+                    'color': 'black',
+                    'background-color' : '#63676a'
+                };
+                $("#kim").addClass("active").css(styleObj);
+                $("#menu").removeClass("menu-open");
+                $("#adminMenu").removeClass("menu-open");
+                $.extend($.fn.dataTable.defaults, {
+                    deferRender: true,
+                    dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                        "<'row mb-2'<'col-sm-12'rt>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    language: {
+                        url: "../static/js/dataTables/datatables.korean.json"
+                    },
+                    columnDefs: [{
+                        defaultContent: "",
+                        targets: "_all",
+                    }],
+                    initComplete: function (settings, json) {
+                        // var $loading = $("#loading");
+                        // if ($loading.is(":visible")) {
+                        //     $loading.hide();
+                        // }
+                    },
+                });
+
+
+                $deliverydataTable.create();
+
+
+        }
+        );
+        var $deliverydataTable = (function () {
+            var $target = null;
+            var $dataTable = null;
+            return {
+                table: function () {
+                    return $dataTable;
+                },
+                create: function () {
+                    $("#loading").show();
+                    $target = $("#deliverydataTable");
+                    $dataTable = $target.DataTable({
+                        dom: "<'row mb-2'<'col-sm-12'rt>>" +
+                            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'f>>",
+                        order: [[0, "desc"],],
+                        paging : true,
+                        pageLength: 10,
+                        pagingType : "simple_numbers",
+                        search: {
+                            regex: true,
+                        },
+                        ajax: {
+                            type: "POST",
+                            dataType: "json",
+                            data: {
+                                startDate: $("#changeStartDate input").val(),
+                                endDate: $("#changeEndDate input").val()
+                            },
+                            url: "/deliveryStatus"
+                        },
+
+                        createdRow: function (row, data, idx) {
+                            var $row = $(row).data({
+                                no: data.no,
+                            });
+                            $row.addClass("pointer").on("click", function () {
+                                $row.addClass("selected");
+                            });
+                        },
+                        columns: [
+                            {data: "no", className: "text-center align-middle",
+                                render: function(data, type, row) {
+                                    return "<div class=\"pointer\" style=\"cursor: pointer;\" onclick=\"info("+row.no+");\">"+data+"</div>";
+                                }},
+                            {data: "address", className: "text-center align-middle",
+                                render: function(data, type, row) {
+                                    return "<div class=\"pointer\" style=\"cursor: pointer;\" onclick=\"info("+row.no+");\">"+data+"</div>";
+                                }},
+                            {data: "status", className: "text-center align-middle",
+                                render: function(data, type, row){
+                                    var status;
+                                    switch (data) {
+                                        case "1" : status = "배송 등록"; break;
+                                        case "2" : status = "배송 중"; break;
+                                        case "3" : status = "배송 완료"; break;
+                                        default : status = "-"; break;
+                                    }
+                                    return status;
+                                }},
+                            {data: "regDate", className: "text-center align-middle"},
+                        ],
+
+
+                    });
+                },
+                destroy: function () {
+                    $dataTable.destroy();
+                },
+                reload: function () {
+                    $deliverydataTable.destroy();
+                    $deliverydataTable.create();
+                },
+            };
+        })();
+        function selectDate() {
+
+            $deliverydataTable.reload();
+        }
+        function info(no) {
+            console.log(no);
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                data: no,
+                url: "/findNo",
+                success: function (data) {
+                    location.assign("/detail?no="+no);
+
+                },
+                error: function (request, status, error) {
+                    toast("error", "오류가 발생하였습니다. 다시 시도해주시기 바랍니다.");
+                }
+            });
+        }
+       /* $(document).on('click', '#dataTable tbody tr', function() {
+            var no =  $("#dataTable").row( this ).data().no;
+            console.log(no);
+        });*/
+        var container = document.getElementById("map");
+        var options = {
+            // center: new kakao.maps.LatLng(35.871124, 128.601780),
+            center: new kakao.maps.LatLng(36.135022, 128.115917),
+            level: 5
+        };
+        var map = new kakao.maps.Map(container, options);
+        // 마커를 표시할 위치와 title 객체 배열입니다
+        var positions = [
+
+            {
+                title: '김천시청',
+                text: '김천시청',
+                latlng: new kakao.maps.LatLng(36.139867,128.1136501)
+            }
+        ];
+
+        // 마커 이미지의 이미지 주소입니다
+
+        for (var i = 0; i < positions.length; i ++) {
+
+            // 마커 이미지의 이미지 크기 입니다
+            var imageSize = new kakao.maps.Size(35, 35);
+
+            // 마커 이미지를 생성합니다
+            var markerImage = new kakao.maps.MarkerImage("../static/images/location-pin.png", imageSize);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                map: map, // 마커를 표시할 지도
+                position: positions[i].latlng, // 마커를 표시할 위치
+                image : markerImage // 마커 이미지
+            });
+            var mLabel = new kakao.maps.InfoWindow({
+                position: positions[i].latlng, // 마커를 표시할 위치
+                content: '<span class="info-title_auto">'+positions[i].text+'</span>'
+            });
+            mLabel.open(map, marker);
+        }
+
+        function kimchart(kimCount){
+            if($("#kimChart").data("kimChart") != null) {
+                $("#kimChart").data("kimChart").destroy();
+            }
+            var kimChart = new Chart(document.getElementById("kimChart"), {
+                type: "doughnut",
+                data: {
+                    /*labels: time,*/
+
+                    datasets: [{
+                        title : "",
+                        data : kimCount,
+                        borderColor : [
+                            "rgb(35,255,58)",
+                            "rgb(247,255,54)",
+                            "rgb(255,193,36)"
+
+                        ],
+                        backgroundColor: [
+                            "rgb(35,255,58)",
+                            "rgb(247,255,54)",
+                            "rgb(255,193,36)"
+                        ],
+
+                        fill: false,
+                        lineTension: 0
+                    }],
+                    labels:[
+                        "배송등록",
+                        "배송중",
+                        "배송완료"
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'right'
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltips: {
+                        mode: "nearest",
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: "nearest",
+                        intersect: true
+                    },
+                    scales: {
+                    },
+                    onHover: function(event, data) {
+                        var point = this.getElementAtEvent(event);
+                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                    },
+                    onClick: function(event, data) {
+                        if (data !== undefined && data.length > 0) {
+
+                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                        }
+                    },
+                }
+            });
+            $("#kimChart").data("kimChart", kimChart);
+        }
+
+    </script>
+</th:block>
+
+
+
+
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+
+<th:block layout:fragment="content">
+
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:35px;">배송현황 상세정보 수정</h1>
+    </div>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:2%">
+
+        <div class="card card-outline card-gray-dark shadow">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span class="text-primary" style="font-size:22px;">기본정보</span>
+                </h3>
+                <!-- <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>기본 정보 수정</button>
+                 </div>-->
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" style="min-height:100px;">
+
+                    <form class="updateInfo" >
+
+                        <div style="color:#000000; background-color:#98ffb5;">
+                        <!--<tr>
+                            <th>송장번호</th>
+                            <th>수취인 연락처</th>
+                            <th>지역</th>
+                            <th>배송기사</th>
+                            <th>배송지 정보</th>
+                        </tr>-->
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">송장번호</span>
+                            <input type="text" id= "no1" class="form-control" value="" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">수취인 연락처</span>
+                            <input type="text" id="mobileNo" class="form-control" value="" />
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">지역</span>
+                            <input type="text" id="area" class="form-control" value="" readonly/>
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">배송기사</span>
+                            <input type="text" id="staff" class="form-control" value=""/>
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">배송지 정보</span>
+                            <input type="text" id="address" class="form-control" value=""/>
+                        </div>
+                        <div class="form-group">
+                            <span style="text-align: center; color:#000000;">수정 사유</span>
+                            <input style="width: 440px; height: 100px;" type="text" id="reason" class="form-control" value=""/>
+                        </div>
+
+                        <button type="button" class="btn btn-sm btn-outline-info" onclick="save()" style="
+                        margin-left: 41%; width: 100px; height: 40px; font-size: 15px; background-color: #3498db; color:#ffffff; margin-bottom: 15px;">저장</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="../static/js/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js"></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js"></script>
+    <script src="../static/js/dataTables/jszip.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var no = [[${no}]];
+        var deliveryDetailList = [[${deliveryDetailList}]];
+        var deliveryInfoList = [[${deliveryInfoList}]];
+        /*]]>*/
+        var styleObj = {
+            'color': 'black',
+            'background-color' : '#63676a'
+        };
+        $("#kim").addClass("active").css(styleObj);
+        $("#menu").removeClass("menu-open");
+        $("#adminMenu").removeClass("menu-open");
+        function deleteInfo(data) {
+            console.log(data);
+        }
+
+        $("#no1").val(deliveryDetailList[0].no);
+        $("#mobileNo").val(deliveryDetailList[0].mobileNo);
+        $("#staff").val(deliveryDetailList[0].staff);
+        $("#area").val(deliveryDetailList[0].area);
+        $("#address").val(deliveryDetailList[0].address);
+
+        var url = document.location.href;
+        getParameterByName(url);
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        var param = getParameterByName('no');
+        function save() {
+
+            console.log("test"+getParameterByName('no'));
+            var pattern_name = /^[가-힣|a-z|A-Z]{2,20}$/;
+            var pattern_phone = /^01(?:0|1|[6-9])[.-]?(\d{3}|\d{4})[.-]?(\d{4})$/;
+            var no = getParameterByName('no');
+            var $name = $("#staff");
+            var $mobileNo = $("#mobileNo");
+            var $address = $("#address");
+            var $reason = $("#reason");
+            var $area = $("#area");
+            if ($name.val() == null) {
+                alert("이름을 입력해주세요.");
+                $name.focus();
+                return false;
+            } else if (!pattern_name.test($name.val())) {
+                alert("이름은 한글 혹은 영문 2 ~ 20자로 입력해주세요.");
+                $name.focus();
+                return false;
+            }
+
+            if ($address.val() == null) {
+                alert("배송지 주소를 입력해주세요.");
+                $address.focus();
+                return false;
+            }
+
+            if ($reason.val() == null) {
+                alert("수정 사유를 입력해주세요.");
+                $reason.focus();
+                return false;
+            }
+            if ($area.val() == null) {
+                alert("지역 입력해주세요.");
+                $area.focus();
+                return false;
+            }
+            if ($mobileNo.val()== null) {
+                alert("전화번호를 입력해주세요.");
+                $mobileNo.focus();
+                return false;
+            } else if (!pattern_phone.test($mobileNo.val())) {
+                alert("전화번호 형식이 유효하지 않습니다.");
+                $mobileNo.focus();
+                return false;
+            }
+                console.log(no);
+            /*console.log($("#name").val());
+            console.log($("#mobileNo").val());
+            console.log($("#address").val());
+            console.log($("#area").val());
+            console.log();*/
+
+            if (confirm("수정 하시겠습니까?")) {
+                var param = {
+                    no : no,
+                    staff :  $("#staff").val(),
+                    mobileNo : $("#mobileNo").val(),
+                    address : $("#address").val(),
+                    area : $("#area").val(),
+                    reason : $("#reason").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    data: param,
+                    url:  "/updateKimcheon.do",
+                    success: function (data) {
+                        console.log(data.result);
+                        if (data.result === "success") {
+                            alert("수정 되었습니다.");
+                            window.opener.location.reload();
+                            self.close();
+
+                        } else {
+                            alert("수정 실패했습니다.");
+                            self.close();
+                        }
+                    }
+                });
+            }
+        }
+
+
+    </script>
+</th:block>
+
+
+
+
+</html>

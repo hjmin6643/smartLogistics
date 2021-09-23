@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" xmlns:c="http://mybatis.org/schema/mybatis-mapper">
+
+
+<th:block layout:fragment="content">
+
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:35px;">배송현황 상세정보</h1>
+    </div>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:2%">
+
+        <div class="card card-outline card-gray-dark shadow">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span class="text-primary" style="font-size:22px;">기본정보</span><span style="color : #c90606; font-weight: bold; font-size : 22px;" id="deleteYn"></span>
+                </h3>
+               <!-- <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>기본 정보 수정</button>
+                </div>-->
+                <div class="card-tools">
+                    <a class="btn btn-sm btn-info" onclick="update();" href="#" style="
+                    width: 100px;
+                    height: 30px;
+                    text-align: center;
+                    vertical-align: middle;
+                    font-size: small;">기본 정보 수정</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" style="min-height:100px;">
+
+                    <table class="table table-bordered table-striped table-hover nowrap text-center table-sm" id="detailTable">
+                        <colgroup>
+                            <col />
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead style="color:#000000; background-color:#baeeff;">
+                        <tr>
+                            <th>송장번호</th>
+                            <th>수취인 연락처</th>
+                            <th>지역</th>
+                            <th>배송기사</th>
+                            <th>배송지 정보</th>
+                        </tr>
+                        </thead>
+                        <tbody style="color:#000000;">
+                        <tr th:if="${deliveryDetailList.size()} == 0"><td colspan="5">데이터가 없습니다.</td></tr>
+                        <tr th:each="item : ${deliveryDetailList}">
+                            <td id="no" th:text="${item.no}"></td>
+                            <td th:text="${item.mobileNo}"></td>
+                            <td th:text="${item.area}"></td>
+                            <td th:text="${item.staff}"></td>
+                            <td th:text="${item.address}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:20px;">
+
+        <div class="card card-outline card-gray-dark shadow">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span class="text-primary" style="font-size:22px;">배송정보</span>
+                </h3>
+                <!-- <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>기본 정보 수정</button>
+                 </div>-->
+                <div class="card-tools">
+                    <a class="btn btn-sm btn-info" onclick="smsHistory()" href="#" style="
+                    width: 100px;
+                    height: 30px;
+                    text-align: center;
+                    vertical-align: middle;
+                    font-size: small;">발송 SMS 보기</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" style="min-height:100px;">
+
+                    <table class="table table-bordered table-striped table-hover nowrap text-center table-sm" id="deliveryTable">
+                        <colgroup>
+                            <col />
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead style="color:#000000; background-color: #baeeff">
+                        <tr>
+                            <th>단계</th>
+                            <th>처리 일시</th>
+                            <th>내용</th>
+
+                        </tr>
+                        </thead>
+                        <tbody style="color:#000000;">
+                        <tr th:if="${deliveryInfoList.size()} == 0"><td colspan="3">데이터가 없습니다.</td></tr>
+                        <tr th:each="item : ${deliveryInfoList}">
+                            <th:block th:switch="${item.step}">
+                                <td th:case="'1'" th:text="'배송 등록'"></td>
+                                <td th:case="'2'" th:text="'배송 중'"></td>
+                                <td th:case="'3'" th:text="'배송 완료'"></td>
+                            </th:block>
+                            <td th:text="${item.processDate}"></td>
+                            <th:block th:switch="${item.content}">
+                                <td th:case="'1'" th:text="'물품이 등록 되었습니다.'"></td>
+                                <td th:case="'2'" th:text="'물품을 배송 중 입니다.'"></td>
+                                <td th:case="'3'" th:text="'물품을 배송 완료 하였습니다.'"></td>
+                            </th:block>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="margin-bottom: 15px;" class="d-inline-block">
+
+                <button th:if="${deleteYn.size()} == 0"  type="button" style="width:100px; height: 40px; margin-left:45%; font-size:15px; text-align: center;background-color: red; color:#ffffff;" class="btn btn-sm btn-outline-danger" id="deleteInfo" onclick="deleteInfo()">삭제하기</button>
+           <!-- <a type="button" style="width:100px; height: 40px; margin-left:10px; font-size:15px; text-align: center;background-color: #3498db; color:#ffffff;" class="btn btn-sm btn-outline-info" id="cancel" href="/kimcheon_deliveryStatus">뒤로</a>-->
+            </div>
+        </div>
+    </section>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:20px;">
+
+        <div class="card card-outline card-gray-dark shadow">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span class="text-primary" style="font-size:22px;">정보 변동 이력</span>
+                </h3>
+                <!-- <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>기본 정보 수정</button>
+                 </div>-->
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" style="min-height:100px;">
+
+                    <table class="table table-bordered table-striped table-hover nowrap text-center table-sm" id="recordTable">
+                        <colgroup>
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead style="color:#000000; background-color: #baeeff">
+                        <tr>
+                            <th>처리</th>
+                            <th>처리 일시</th>
+                            <th>변경</th>
+                            <th>사유</th>
+
+                        </tr>
+                        </thead>
+                        <tbody style="color:#000000;">
+                        <tr th:if="${deleteList.size()} == 0"><td colspan="4">데이터가 없습니다.</td></tr>
+                        <tr th:each="item : ${deleteList}">
+                            <td th:text="${item.no}"></td>
+                            <td th:text="${item.regDate}"></td>
+                            <td th:text="${item.deleteYn}"></td>
+                            <td th:text="${item.reason}"></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <script src="../static/js/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js"></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js"></script>
+    <script src="../static/js/dataTables/jszip.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var deliveryDetailList = [[${deliveryDetailList}]];
+        var deliveryInfoList = [[${deliveryInfoList}]];
+        var deleteYn =  [[${deleteYn}]];
+        /*]]>*/
+        var styleObj = {
+            'color': 'black',
+            'background-color' : '#63676a'
+        };
+        $("#menu").removeClass("menu-open");
+        $("#adminMenu").removeClass("menu-open");
+        //var no =$("#no").val();
+        var no =document.getElementById('no').innerText;
+        if(deleteYn[0].no !== null || deleteYn[0].no === "undefined") {
+            $("#deleteYn").text("(삭제됨)");
+        }
+        var url = document.location.href;
+        getParameterByName(url);
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        var param = getParameterByName('no');
+        console.log(param+"parammmm");
+
+      /*  $("#kim").addClass("active").css(styleObj);*/
+
+        function update() {
+
+            var url = '/kimcheon_update?no='+no;
+            centerPopup(url, 550, 650);
+        }
+        function deleteInfo() {
+
+            var url = '/status_delete?no='+no;
+            centerPopup(url, 500, 350);
+
+
+        }
+        function smsHistory() {
+            var param = getParameterByName('no');
+            location.assign("/sms_notice?no="+param);
+        }
+        function centerPopup(pUrl, pWidth, pHeight) {
+            try {
+                var xPosition = screen.width / 2 - pWidth / 2;
+
+                var yPosition = -75 + screen.height / 2 - pHeight / 2;
+
+                window.open(pUrl, "", "scrollbars=yes,toolbar=0,status=0,resizable=0,menubar=no,width=" + pWidth + ",height=" + pHeight + ",left=" + xPosition + ",top=" + yPosition);
+            } catch (Exception) {
+                alert("Usage : openPopUpCenter( 팝업창 넓이, 팝업창 높이, 팝업 파일명 )");
+                return false;
+            }
+        }
+
+
+
+
+    </script>
+</th:block>
+
+
+
+
+</html>

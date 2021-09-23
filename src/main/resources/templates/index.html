@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+
+        <th:block layout:fragment="content">
+                <div>
+                        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:25px;">통합 배송 현황</h1>
+                </div>
+
+                <section class="content p-0">
+                        <div class="container-fluid p-0 pt-2">
+                                <div id="map" class="position-absolute w-100 h-50" style="margin-bottom:-10px;">
+                                        <div class="card shadow position-absolute bg-white p-1" style="top:34px; right:15%; width:300px; height:200px; font-size:12px; z-index:20;border-radius: 2em;">
+                                            <h3 style="text-align: center; font-weight: bold;">지역 전체 <span id="allCount" style="font-weight: lighter;"></span></h3>
+                                            <div class="card-body mb-4">
+                                                <canvas class="m-auto" id="chart"  style="width:20vw;height:20vh;"></canvas>
+                                            </div>
+                                        </div>
+
+                                    <div class="card shadow position-absolute bg-white p-1" style="bottom:10%; left:5%; width:200px; height:110px; font-size:12px; z-index:20;border-radius: 2em;">
+                                       <!-- <h3 style="text-align: center; font-weight: bold;">범주</h3>-->
+                                        <div class="card-body mb-4">
+                                           <!-- <canvas class="m-auto" id="category"  style="width:20vw;height:20vh;"></canvas>-->
+                                            <div style="background-color: #a8c0ff; width: 50px; height: 17px; display: inline-block; "></div>
+                                            <span style="display:inline-block; float: right; font-weight: bold; text-align: center;"> 실내 자율주행 로봇</span>
+                                            <div style="background-color: #98ffb5; width: 50px; height: 17px; display: inline-block; "></div>
+                                            <span style="display:inline-block; float: right; font-weight: bold; text-align: center;"> 실내 대상 추종 로봇</span>
+                                            <div style="background-color: #f4ff79; width: 50px; height: 17px; display: inline-block; "></div>
+                                            <span style="display:inline-block; margin-left: 17px; font-weight: bold; text-align: center;"> 드론 배송</span>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                </section>
+
+
+
+                <div class="container-fluid p-0 pt-2">
+
+                        <div class="card shadow position-absolute p-1" style="background-color:#a8c0ff;  top:63%; left:14.5%; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                            <h3 style="text-align: center; color:#000000;font-weight: bold;">물류센터 -> 김천시청 <span style="float: right; margin-right: 20px; margin-top:5px;" id="kimAll"></span></h3>
+                            <div class="card-body mb-4">
+                                <canvas class="m-auto" id="kimChart"  style="width:20vw;height:15vh;"></canvas>
+                            </div>
+                        </div>
+                    <div class="card shadow position-absolute p-1" style="background-color:#98ffb5;  top:63%; left:40%; margin-left:15px; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                        <h3 style="text-align: center; color:#000000;font-weight: bold;">물류센터 -> 한국도로공사 <span style="float: right; margin-right: 20px; margin-top:5px;" id="roadAll"></span></h3>
+                        <div class="card-body mb-4">
+                            <canvas class="m-auto" id="roadChart"  style="width:20vw;height:15vh;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card shadow position-absolute p-1" style="background-color:#f4ff79;  top:63%; left:66%; margin-left:15px; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                        <h3 style="text-align: center; color:#000000;font-weight: bold;">물류센터 -> 그린스마트빌리지 <span style="float: right; margin-right: 20px; margin-top:5px;" id="greenAll"></span></h3>
+                        <div class="card-body mb-4">
+                            <canvas class="m-auto" id="greenChart"  style="width:20vw;height:15vh;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card shadow position-absolute p-1" style="background-color:#a8c0ff;  top:89%; left:14.5%; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                        <h3 style="text-align: center; color:#000000;font-weight: bold;">물류센터 -> 한국교통안전공단<span style="float: right; margin-right: 20px; margin-top:5px;" id="trafficAll"></span></h3>
+                        <div class="card-body mb-4">
+                            <canvas class="m-auto" id="trafficChart"  style="width:20vw;height:15vh;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card shadow position-absolute p-1" style="background-color:#98ffb5;  top:89%; left:40%; margin-left:15px; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                        <h3 style="text-align: center; color:#000000; font-weight: bold;">물류센터 -> 푸르나임아파트<span style="float: right; margin-right: 20px; margin-top:5px;" id="apartAll"></span></h3>
+                        <div class="card-body mb-4">
+                            <canvas class="m-auto" id="apartChart"  style="width:20vw;height:15vh;"></canvas>
+                        </div>
+                    </div>
+                    <div class="card shadow position-absolute p-1" style="background-color:#f4ff79;  top:89%; left:66%; margin-left:15px; width:25%; height:220px; font-size:12px; z-index:0; border-radius: 2em;">
+                        <h3 style="text-align: center; color:#000000;font-weight: bold;">김천시청 -> 어모면사무소<span style="float: right; margin-right: 20px; margin-top:5px;" id="officeAll"></span></h3>
+                        <div class="card-body mb-4">
+                            <canvas class="m-auto" id="officeChart"  style="width:20vw;height:15vh;"></canvas>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+
+
+
+       <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=caa376afbc1b5fc1424a4dcdc8079e0a&libraries=clusterer"></script>
+            <script src="../static/js/chart/Chart.js"></script>
+            <script src="../static/js/chart/Chart.min.js"></script>
+            <script src="../static/js/chart/chartjs-plugin-labels.js"></script>
+            <script src="../static/js/chart/chartjs-plugin-labels.min.js"></script>
+                <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        var mapList = [[${mapList}]];
+                        var kimCountList = [[${kimCountList}]];
+                        var allCount = [[${allCount}]];
+                        var allCountList =  [[${allCountList}]];
+                        var kimcheonCount =  [[${kimcheonCount}]];
+                        var roadChart =  [[${roadChart}]];
+                        var greenChart = [[${greenChart}]];
+                        var roadAll = [[${roadAll}]];
+                        var greenAll = [[${greenAll}]];
+                        var trafficChart = [[${trafficChart}]];
+                        var trafficAll = [[${trafficAll}]];
+                        var apartChart =  [[${apartChart}]];
+                        var apartAll =  [[${apartAll}]];
+                        var officeChart =[[${officeChart}]];
+                        var officeAll = [[${officeAll}]];
+                        /*]]>*/
+                        var kimCount = [];
+                        var count = [];
+                        var road = [];
+                        var green =[];
+                        var traffic = [];
+                        var apart = [];
+                        var office=[];
+                         $("#kimAll").text(" 전체 : "+kimcheonCount[0].count + "건");
+                        $("#roadAll").text(" 전체 : "+roadAll[0].count + "건");
+                        $("#greenAll").text(" 전체 : "+greenAll[0].count + "건");
+                        $("#allCount").text(" 배송 건 :"+ allCount[0].count+"건");
+                        $("#trafficAll").text(" 전체 : "+trafficAll[0].count + "건");
+                        $("#apartAll").text(" 전체 : "+apartAll[0].count + "건");
+                        $("#officeAll").text(" 전체 : "+officeAll[0].count + "건");
+                        for(var i=0, size=kimCountList.length; i<size; i++) {
+                            kimCount.push(Number(kimCountList[i].count));
+                        }
+                        for(var i=0, size=allCountList.length; i<size; i++) {
+                            count.push(Number(allCountList[i].count));
+                        }
+                        for(var i=0, size=roadChart.length; i<size; i++) {
+
+                            road.push(Number(roadChart[i].count));
+                        }
+                        for (var i=0, size=greenChart.length; i<size; i++) {
+                            green.push(Number(greenChart[i].count));
+                        }
+                        for (var i=0, size=trafficChart.length; i<size; i++) {
+                            traffic.push(Number(trafficChart[i].count));
+                        }
+                        for (var i=0, size=apartChart.length; i<size; i++) {
+                            apart.push(Number(apartChart[i].count));
+                        }
+                        for (var i=0, size=officeChart.length; i<size; i++) {
+                            office.push(Number(officeChart[i].count));
+                        }
+
+                        $("#adminMenu").removeClass("menu-open");
+
+                        var container = document.getElementById("map");
+                        var options = {
+                                // center: new kakao.maps.LatLng(35.871124, 128.601780),
+                                center: new kakao.maps.LatLng(36.133293, 128.139690),
+                                level: 8
+                        };
+                        var map = new kakao.maps.Map(container, options);
+
+                        chart(count);
+                        kimchart(kimCount);
+                        mapData();
+                        roadCharts(road);
+                        greenCharts(green);
+                        trafficCharts(traffic);
+                        apartCharts(apart);
+                        officeCharts(office);
+                        function mapData() {
+                            console.log("length"+mapList.length);
+                            var mapArr = [];
+                            if (mapList.length !== 0) {
+                                for (var i = 0, size = mapList.length; i < size; i++) {
+                                    var item = mapList[i];
+                                    var imageSize = new kakao.maps.Size(30, 30);
+                                    var markerImage = new kakao.maps.MarkerImage("../static/images/location-pin.png", imageSize);
+                                    var marker = new kakao.maps.Marker({
+                                        map: map, // 마커를 표시할 지도
+                                        position: new kakao.maps.LatLng(item.lat, item.lon), // 마커를 표시할 위치
+                                        image : markerImage // 마커 이미지
+                                    });
+                                    if(item.type === "AUTO") {
+                                        var mLabel = new kakao.maps.InfoWindow({
+                                            content: '<span class="info-title_auto">'+item.address+'</span>'
+                                        });
+                                        mLabel.open(map, marker);
+                                    } else if(item.type ==="FOLLOW") {
+                                        var mLabel = new kakao.maps.InfoWindow({
+                                            content: '<span class="info-title_follow">'+item.address+'</span>'
+                                        });
+                                        mLabel.open(map, marker);
+                                    } else if(item.type === "DRON") {
+                                        var mLabel = new kakao.maps.InfoWindow({
+                                            content: '<span class="info-title_dron">'+item.address+'</span>'
+                                        });
+                                        mLabel.open(map, marker);
+                                    }
+
+                                }
+                                mLabel.open(map, marker);
+                                }
+                            }
+                        function customCenterLatLng(latitude, longitude) {
+                            var tempValueArr = [0.001,0.002,0.004,0.008,0.016];
+                            var tempValue = tempValueArr[map.getLevel()-1];
+                            if (tempValue === undefined) {
+                                map.setLevel(5);
+                                tempValue = tempValueArr[4];
+                            }
+                            return new kakao.maps.LatLng(latitude, (+longitude + tempValue));
+                        }
+                        function chart(grade){
+                            if($("#chart").data("chart") != null) {
+                                $("#chart").data("chart").destroy();
+                            }
+                            var chart = new Chart(document.getElementById("chart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : grade,
+                                        borderColor : [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)",
+                                            "rgb(255,121,18)",
+                                            "rgb(255,39,35)"
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)",
+                                            "rgb(255,121,18)",
+                                            "rgb(255,39,35)"],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#chart").data("chart", chart);
+                        }
+
+                        function kimchart(kimCount){
+                            if($("#kimChart").data("kimChart") != null) {
+                                $("#kimChart").data("kimChart").destroy();
+                            }
+                            var kimChart = new Chart(document.getElementById("kimChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : kimCount,
+                                        borderColor : [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#kimChart").data("kimChart", kimChart);
+                        }
+                        function roadCharts(road){
+                            if($("#roadChart").data("kimChart") != null) {
+                                $("#roadChart").data("kimChart").destroy();
+                            }
+                            var roadChart = new Chart(document.getElementById("roadChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : road,
+                                        borderColor : [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#roadChart").data("roadChart", roadChart);
+                        }
+                        function apartCharts(apart){
+                            if($("#apartChart").data("apartChart") != null) {
+                                $("#apartChart").data("apartChart").destroy();
+                            }
+                            var apartChart = new Chart(document.getElementById("apartChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : apart,
+                                        borderColor : [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#apartChart").data("apartChart", apartChart);
+                        }
+                        function greenCharts(green){
+                            if($("#greenChart").data("greenChart") != null) {
+                                $("#greenChart").data("greenChart").destroy();
+                            }
+                            var greenChart = new Chart(document.getElementById("greenChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : green,
+                                        borderColor : [
+                                            "rgb(153,204,255)",
+                                            "rgb(153,153,255)",
+                                            "rgb(204,153,255)",
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(153,204,255)",
+                                            "rgb(153,153,255)",
+                                            "rgb(204,153,255)",
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#greenChart").data("greenChart", greenChart);
+                        }
+                        function officeCharts(office){
+                            if($("#officeChart").data("officeChart") != null) {
+                                $("#officeChart").data("officeChart").destroy();
+                            }
+                            var officeChart = new Chart(document.getElementById("officeChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : office,
+                                        borderColor : [
+                                            "rgb(153,204,255)",
+                                            "rgb(153,153,255)",
+                                            "rgb(204,153,255)",
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(153,204,255)",
+                                            "rgb(153,153,255)",
+                                            "rgb(204,153,255)",
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#officeChart").data("officeChart", officeChart);
+                        }
+                        function trafficCharts(green){
+                            if($("#trafficChart").data("trafficChart") != null) {
+                                $("#trafficChart").data("trafficChart").destroy();
+                            }
+                            var trafficChart = new Chart(document.getElementById("trafficChart"), {
+                                type: "doughnut",
+                                data: {
+                                    /*labels: time,*/
+
+                                    datasets: [{
+                                        title : "",
+                                        data : green,
+                                        borderColor : [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+
+                                        ],
+                                        backgroundColor: [
+                                            "rgb(35,255,58)",
+                                            "rgb(247,255,54)",
+                                            "rgb(255,193,36)"
+                                        ],
+
+                                        fill: false,
+                                        lineTension: 0
+                                    }],
+                                    labels:[
+                                        "배송등록",
+                                        "배송중",
+                                        "배송완료"
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    title: {
+                                        display: false
+                                    },
+                                    tooltips: {
+                                        mode: "nearest",
+                                        intersect: false,
+                                    },
+                                    hover: {
+                                        mode: "nearest",
+                                        intersect: true
+                                    },
+                                    scales: {
+                                    },
+                                    onHover: function(event, data) {
+                                        var point = this.getElementAtEvent(event);
+                                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                                    },
+                                    onClick: function(event, data) {
+                                        if (data !== undefined && data.length > 0) {
+
+                                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                                        }
+                                    },
+                                }
+                            });
+                            $("#trafficChart").data("trafficChart", trafficChart);
+                        }
+                   </script>
+        </th:block>
+
+
+
+
+</html>

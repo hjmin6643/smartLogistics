@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+
+<th:block layout:fragment="content">
+
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:35px;">로봇 / 드론 관리</h1>
+    </div>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:2%">
+
+        <div class="card card-outline card-gray-dark shadow">
+            <div class="card-header">
+
+                <!-- <div class="card-tools">
+                     <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i>기본 정보 수정</button>
+                 </div>-->
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" style="min-height:100px;">
+
+                    <table class="table table-bordered table-striped table-hover nowrap text-center table-sm" id="robotDronTable">
+                        <colgroup>
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead style="color:#000000;">
+                        <tr>
+                            <th>번호</th>
+                            <th>종류</th>
+                            <th>관리 ID</th>
+                            <th>담당 지역</th>
+                            <th>상태</th>
+                            <th>관리 메뉴</th>
+
+                        </tr>
+                        </thead>
+                        <tbody style="color:#000000">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div style="text-align: right;" class="card-header py-3">
+                <button type="button" style="width:100px; height: 40px; margin-left:10px; font-size:17px; text-align: center;background-color: #3498db; color:#ffffff;" class="btn btn-sm btn-outline-info" id="cancel" onclick="addCourier()">신규등록</button>
+
+            </div>
+        </div>
+    </section>
+
+    <link href="../static/js/dataTables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="../static/js/dataTables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <script src="../static/js/dataTables/jquery.dataTables.js" defer></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js" defer></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js" defer></script>
+    <script src="../static/js/dataTables/jszip.min.js" defer></script>
+
+    <script src="../static/js/dataTables/dataTables.bootstrap4.js" defer></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var no = [[${no}]];
+
+        /*]]>*/
+
+        $(function () {
+
+
+            var styleObj = {
+                'color': 'black',
+                'background-color' : '#63676a'
+            };
+            $("#robot").addClass("active").css(styleObj);;
+            $("#menu").removeClass("menu-open");
+            $.extend($.fn.dataTable.defaults, {
+                deferRender: true,
+                dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                    "<'row mb-2'<'col-sm-12'rt>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                language: {
+                    url: "../static/js/dataTables/datatables.korean.json"
+                },
+                columnDefs: [{
+                    defaultContent: "",
+                    targets: "_all",
+                }],
+                initComplete: function (settings, json) {
+                    // var $loading = $("#loading");
+                    // if ($loading.is(":visible")) {
+                    //     $loading.hide();
+                    // }
+                },
+            });
+
+            var $robotDronTable = (function () {
+                var $target = null;
+                var $dataTable = null;
+                return {
+                    table: function () {
+                        return $dataTable;
+                    },
+                    create: function () {
+                        $("#loading").show();
+                        $target = $("#robotDronTable");
+                        $dataTable = $target.DataTable({
+                            dom: "<'row mb-2'<'col-sm-12'rt>>" +
+                                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'f>>",
+                            order: [[0, "desc"],],
+                            paging : true,
+                            pageLength: 10,
+                            pagingType : "simple_numbers",
+                            search: {
+                                regex: true,
+                            },
+                            ajax: {
+                                type: "POST",
+                                dataType: "json",
+                                url: "/robotDronList"
+                            },
+
+
+                            columns: [
+                                {data: "no", className: "text-center align-middle"},
+                                {data: "kind", className: "text-center align-middle"},
+                                {data: "manageId", className: "text-center align-middle"},
+                                {data: "area", className: "text-center align-middle"},
+                                {data: "status", className: "text-center align-middle",
+                                    render: function(data, type, row){
+                                        var status;
+                                        switch (data) {
+                                            case "0" : status = "배송 등록"; break;
+                                            case "1" : status = "배송 중"; break;
+                                            case "2" : status = "배송 완료"; break;
+                                            default : status = "-"; break;
+                                        }
+                                        return status;
+                                    }
+                                },
+                                {
+                                    data: "no",
+                                    className: "text-center",
+                                    render: function(data, type, row, meta) {
+                                        return "<button type=\"button\" class=\"btn btn-outline-success btn-lg\" id=\"updateAccept" + meta.row + "\" onclick=\"update(this);\">수정</button>" +
+                                            "<button style=\"margin-left:10px;\" type=\"button\" class=\"btn btn-outline-success btn-lg\" id=\"updateAccept" + meta.row + "\" onclick=\"deleteManager(this);\">삭제</button>";
+                                    },
+                                }
+                            ],
+
+
+                        });
+                    },
+                    destroy: function () {
+                        $dataTable.destroy();
+                    },
+                    reload: function () {
+                        $robotDronTable.destroy();
+                        $robotDronTable.create();
+                    },
+                };
+            })();
+            $robotDronTable.create();
+        })
+
+
+    </script>
+</th:block>
+
+
+
+
+</html>

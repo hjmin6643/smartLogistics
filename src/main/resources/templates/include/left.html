@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a class="brand-link text-center bg-dark" href="/main" style="min-height:150px;">
+        <!--/*
+        <span class="brand-text font-weight-light">안전 플랫폼</span>
+        */-->
+        <img src="../../static/images/box3.png" class="brand-text" style="width:120px;height:85px; margin-top:10px;" alt="logo" /><br>
+        <span class="brand-text position-absolute font-weight-bold" style="left:0; margin:15px 0 0 40px; color:#449AF8; font-size:16px;font-style:italic;text-shadow:0px 0px 0px #449AF8;">물류 통합 관리 시스템</span>
+    </a>
+
+    <div id="sidebar" class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <!--/*
+            <div class="image"></div>
+            <div class="info"></div>
+            */-->
+        </div>
+
+        <nav  class="mt-5 mb-5">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li style="margin-top:70px;" class="nav-item">
+                <li id="menu" class="nav-item has-treeview menu-open">
+                    <a class="nav-link collapsed" href="/main" >
+                        <!-- <img src="../../static/images/truck.png" alt="home" style="width:25px;height:22px;" />-->
+                        <p style="font-weight: bold;">
+                            배송현황
+                            <!--<i class="right fas fa-angle-left"></i>-->
+
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview show">
+                        <li class="nav-item">
+                            <a id="kim" class="nav-link collapse-item" href="/kimcheon_deliveryStatus" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">김천시청</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id = "han1" class="nav-link collapse-item" href="/traffic_deliveryStatus" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">한국교통안전공단</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="han2" class="nav-link collapse-item" href="/road_delivery" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">한국도로공사</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="apart" class="nav-link collapse-item" href="/apart_delivery" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">푸르나임아파트</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="green" class="nav-link collapse-item" href="/green_delivery" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">그린스마트빌리지</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="office" class="nav-link collapse-item" href="/office_delivery" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">어모면사무소</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-href="">
+                        <!-- <img src="../../static/images/smartphone-call.png" alt="disaster" style="width:25px;height:22px;" />-->
+                        <p style="font-weight: bold;">
+                            음식 배송 현황
+
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview show">
+                        <li class="nav-item">
+                            <a id="food" class="nav-link collapse-item" href="/food_delivery" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">한산휴시티</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="sms" href="/sms_notice" data-href="">
+                        <!-- <img src="../../static/images/smartphone-call.png" alt="disaster" style="width:25px;height:22px;" />-->
+                        <p style="font-weight: bold;">
+                            SMS 발송 내역
+
+                        </p>
+                    </a>
+                </li>
+
+                <li id="adminMenu" class="nav-item has-treeview menu-open">
+                    <a class="nav-link collapsed" href="#" >
+                        <!-- <img src="../../static/images/truck.png" alt="home" style="width:25px;height:22px;" />-->
+                        <p style="font-weight: bold;">
+                            관리 메뉴
+                            <!--<i class="right fas fa-angle-left"></i>-->
+
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview show">
+                        <li class="nav-item">
+                            <a id="courier" class="nav-link collapse-item" href="/delivery_courier" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">택배 기사 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id = "delivery" class="nav-link collapse-item" href="/delivery_Manager" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">배송 담당자 관리</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a id="robot" class="nav-link collapse-item" href="/robotDron" data-href="#">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p style="font-size: small;">로봇/드론 관리</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+
+
+
+
+
+            </ul>
+        </nav>
+
+    </div>
+</aside>
+
+
+<script th:inline="javascript">
+    $(function () {
+        var loadingHide = true;
+
+        $("#sidebar a:not(.collapsed)").each(function (idx, val) {
+            console.log("test1");
+            var $val = $(val);
+            var pathname = $(location).attr("pathname");
+
+            var href = $val.data("href");
+            if (href !== undefined && href.indexOf(pathname) > -1) {
+                console.log("test2");
+                if ($val.hasClass("nav-link")) {
+
+                }
+                if ($val.hasClass("collapse-item")) {
+                    console.log("test3");
+                    $val.parent().parent().show();
+                    $val.parent().parent().prev().addClass("active");
+                    $val.parent().parent().parent().addClass("menu-open");
+                    return false;
+                }
+                if ($val.hasClass("no-hide")) {
+                    loadingHide = false;
+                }
+            }
+        });
+        // $("#sidebar a:not(.collapsed)").off().on("click", function () {
+        //     $("#loading").show();
+        // });
+        setTimeout(function () {
+            if (loadingHide) {
+                $("#loading").hide();
+            }
+        }, 1000);
+    });
+</script>
+
+</html>

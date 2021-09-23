@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0" />
+    <head>
+
+        <th:block th:include="include/mobile/mobile_header"> </th:block>
+        <!--suppress ThymeleafVariablesResolveInspection -->
+        <title th:text="|Smart Logistics System - ${title}|"></title>
+    </head>
+    <body id="pageBody" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+        <div id="loading" class="custom-loading">
+            <div class="text-center">
+
+            </div>
+        </div>
+        <div id="wrapper" class="wrapper">
+            <!-- <th:block th:include="include/top"> </th:block>-->
+
+            <div style="margin-top:-10px;" id="content-wrapper" class="content-wrapper">
+                <th:block layout:fragment="content"> </th:block>
+            </div>
+            <footer class="main-footer d-none"><!--d-md-block-->
+
+                <strong>COPYRIGHT&copy; BY NEXMORESYSTEMS INC. ALL RIGHTS RESERVED</strong>
+
+            </footer>
+        </div>
+        <th:block th:include="include/mobile/mobile_footer"> </th:block>
+    </body>
+</html>

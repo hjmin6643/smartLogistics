@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexmore.smartLogistics.mapper.DeliveryCourierMapper">
+
+    <select id="selectDeliveryCourier" resultType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO">
+        SELECT NO,
+                NAME,
+                AREA,
+                MOBILE_NO as mobileNm,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as regDate
+        FROM DELIVERY_COURIER_TB
+        ORDER BY REG_DATE DESC
+    </select>
+
+    <insert id="insertCourier" parameterType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO" keyProperty="no">
+        <selectKey order="BEFORE" keyProperty="no" resultType="int">
+            SELECT IFNULL(MAX(CAST(NO AS UNSIGNED)), 0) + 1 FROM DELIVERY_COURIER_TB
+        </selectKey>
+        INSERT INTO DELIVERY_COURIER_TB (
+        NO,
+        NAME,
+        MOBILE_NO,
+        AREA,
+        REG_DATE
+        ) VALUES (
+        #{no},
+        #{name},
+        #{mobileNm},
+        #{area},
+        now()
+        )
+    </insert>
+
+    <delete id="deleteCourier" parameterType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO">
+		DELETE FROM DELIVERY_COURIER_TB
+		WHERE NO = #{no}
+	</delete>
+
+    <select id="selectDeliveryCourierByNo" parameterType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO" resultType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO">
+        SELECT NO,
+                NAME,
+                AREA,
+                MOBILE_NO as mobileNm,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as regDate
+        FROM DELIVERY_COURIER_TB
+        WHERE NO= #{no}
+        ORDER BY REG_DATE DESC
+    </select>
+
+    <update id="updateCourier" parameterType="com.nexmore.smartLogistics.domain.DeliveryCourierDTO">
+		UPDATE DELIVERY_COURIER_TB
+	    SET NAME = #{name} ,
+	    MOBILE_NO =#{mobileNm},
+	    AREA =  #{area}
+	    WHERE NO= #{no}
+	</update>
+</mapper>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+<th:block layout:fragment="content">
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:25px;">그린 스마트 빌리지 배송 현황 <span style="color:#000000">(드론 배송)</span></h1>
+
+    </div>
+
+    <section class="content p-0">
+        <div class="container-fluid p-0 pt-2">
+            <div id="map" class="position-absolute w-100 h-50" style="margin-bottom:-10px;">
+                <div class="card shadow position-absolute p-1" style="top:34px; left:27%; width:300px; height:200px;background-color:#f4ff79; font-size:12px; z-index:20;border-radius: 2em;">
+                    <h3 style="text-align: center; color:#000000; font-weight: bold;">그린 스마트 빌리지 (총 24건)</h3>
+                    <div class="card-body mb-4">
+                        <canvas class="m-auto" id="chart"  style="width:20vw;height:20vh;"></canvas>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+        <div style="margin-top:620px;" class="card card-outline card-gray-dark shadow mb-4">
+            <div class="card-header">
+                <h3 class="card-title font-weight-bold">
+                    <span style="font-size: large" class="text-primary">전체 4건(배송 중 2건/완료 2건)</span>
+                </h3>
+
+            </div>
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden">
+                    <div class="d-inline-block w-100">
+                        <table class="table table-bordered table-striped table-hover nowrap w-100" id="dataTable">
+                            <thead>
+                            <tr>
+                                <th style="color: #000000;" class="text-center">송장번호</th>
+                                <th style="color: #000000;" class="text-center">배송지</th>
+                                <th style="color: #000000;" class="text-center">배송현황</th>
+                                <th style="color: #000000;" class="text-center">등록일</th>
+                            </tr>
+                            </thead>
+                            <tbody style="color:#000000"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <link href="../static/js/dataTables/buttons.bootstrap4.min.css" rel="stylesheet">
+    <link href="../static/js/dataTables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=caa376afbc1b5fc1424a4dcdc8079e0a&libraries=clusterer"></script>
+    <script src="../static/js/chart/Chart.js"></script>
+    <script src="../static/js/chart/Chart.min.js"></script>
+    <script src="../static/js/chart/chartjs-plugin-labels.js"></script>
+    <script src="../static/js/chart/chartjs-plugin-labels.min.js"></script>
+    <script src="../static/js/dataTables/jquery.dataTables.js" defer></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js" defer></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js" defer></script>
+    <script src="../static/js/dataTables/jszip.min.js" defer></script>
+
+    <script src="../static/js/dataTables/dataTables.bootstrap4.js" defer></script>
+    <!--  <link rel="stylesheet" href="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.css"/>
+      <script src="https://cdn.datatables.net/t/bs-3.3.6/jqc-1.12.0,dt-1.10.11/datatables.min.js" defer></script>-->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        /*var slopeMapList = [[${slopeMapList}]];
+        var pumpMapList = [[${pumpMapList}]];
+        var rainfall = [[${rainfall}]];
+        var manholeList = [[${manholeList}]];*/
+        /*]]>*/
+        var count = [];
+        count.push(7);
+        count.push(8);
+        count.push(9);
+
+
+        $(function () {
+
+                var styleObj = {
+                    'color': 'black',
+                    'background-color' : '#63676a'
+                };
+                $("#green").addClass("active").css(styleObj);
+                $("#menu").removeClass("menu-open");
+                $("#adminMenu").removeClass("menu-open");
+                $.extend($.fn.dataTable.defaults, {
+                    deferRender: true,
+                    dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                        "<'row mb-2'<'col-sm-12'rt>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                    language: {
+                        url: "../static/js/dataTables/datatables.korean.json"
+                    },
+                    columnDefs: [{
+                        defaultContent: "",
+                        targets: "_all",
+                    }],
+                    initComplete: function (settings, json) {
+                        // var $loading = $("#loading");
+                        // if ($loading.is(":visible")) {
+                        //     $loading.hide();
+                        // }
+                    },
+                });
+
+                $("#dataTable").DataTable({
+                    serverSide: true,
+                    processing: true,
+                    ajax: {
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                        },
+                        url: "/deliveryStatus",
+                    },
+                    scrollX: true,
+                    order: [[3, "desc"],],
+                    paging:false,
+                    search: {
+                        regex: true,
+                    },
+                    createdRow: function (row, data, idx) {
+                        var $row = $(row).data({
+                            no: data.no,
+                        });
+                        $row.addClass("pointer").on("click", function () {
+                            $row.addClass("selected");
+                        });
+                    },
+                    initComplete: function (settings, json) {
+                        $("#loading").hide();
+                    },
+                    columns: [
+                        {data: "no", className: "text-center align-middle",
+                            render: function(data, type, row) {
+                                return "<div class=\"pointer\" style=\"cursor: pointer;\" onclick=\"info("+row.no+");\">"+data+"</div>";
+                            }},
+                        {data: "address", className: "text-center align-middle",
+                            render: function(data, type, row) {
+                                return "<div class=\"pointer\" style=\"cursor: pointer;\" onclick=\"info("+row.no+");\">"+data+"</div>";
+                            }},
+                        {data: "status", className: "text-center align-middle",
+                            render: function(data, type, row){
+                                var status;
+                                switch (data) {
+                                    case "1" : status = "배송 등록"; break;
+                                    case "2" : status = "배송 중"; break;
+                                    case "3" : status = "배송 완료"; break;
+                                    default : status = "-"; break;
+                                }
+                                return status;
+                            }},
+                        {data: "regDate", className: "text-center align-middle"},
+                    ],
+                });
+
+            }
+        );
+
+        function info(no) {
+            console.log(no);
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                data: no,
+                url: "/findNo",
+                success: function (data) {
+                    location.assign("/detail?no="+no);
+
+                },
+                error: function (request, status, error) {
+                    toast("error", "오류가 발생하였습니다. 다시 시도해주시기 바랍니다.");
+                }
+            });
+        }
+        /* $(document).on('click', '#dataTable tbody tr', function() {
+             var no =  $("#dataTable").row( this ).data().no;
+             console.log(no);
+         });*/
+        var container = document.getElementById("map");
+        var options = {
+            // center: new kakao.maps.LatLng(35.871124, 128.601780),
+            center: new kakao.maps.LatLng(36.14682,128.090697),
+            level: 5
+        };
+        var map = new kakao.maps.Map(container, options);
+        // 마커를 표시할 위치와 title 객체 배열입니다
+        var positions = [
+
+            {
+                title: '그린 스마트 빌리지',
+                text: '그린 스마트 빌리지',
+                latlng: new kakao.maps.LatLng(36.14682,128.090697)
+            }
+        ];
+
+        // 마커 이미지의 이미지 주소입니다
+
+        for (var i = 0; i < positions.length; i ++) {
+
+            // 마커 이미지의 이미지 크기 입니다
+            var imageSize = new kakao.maps.Size(35, 35);
+
+            // 마커 이미지를 생성합니다
+            var markerImage = new kakao.maps.MarkerImage("../static/images/location-pin.png", imageSize);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                map: map, // 마커를 표시할 지도
+                position: positions[i].latlng, // 마커를 표시할 위치
+                image : markerImage // 마커 이미지
+            });
+            var mLabel = new kakao.maps.InfoWindow({
+                position: positions[i].latlng, // 마커를 표시할 위치
+                content: '<span class="info-title_dron">'+positions[i].text+'</span>'
+            });
+            mLabel.open(map, marker);
+        }
+        chart(count);
+        function chart(grade){
+            if($("#chart").data("chart") != null) {
+                $("#chart").data("chart").destroy();
+            }
+            var chart = new Chart(document.getElementById("chart"), {
+                type: "doughnut",
+                data: {
+                    /*labels: time,*/
+
+                    datasets: [{
+                        title : "",
+                        data : grade,
+                        borderColor : [
+                            "rgb(153,204,255)",
+                            "rgb(153,153,255)",
+                            "rgb(204,153,255)",
+                            "rgb(255,121,18)",
+                            "rgb(255,39,35)"
+                        ],
+                        backgroundColor: [
+                            "rgb(153,204,255)",
+                            "rgb(153,153,255)",
+                            "rgb(204,153,255)",
+                            "rgb(255,121,18)",
+                            "rgb(255,39,35)"],
+
+                        fill: false,
+                        lineTension: 0
+                    }],
+                    labels:[
+                        "배송등록 :"+grade[0] +"건",
+                        "배송중 :"+grade[1] +"건",
+                        "배송완료 :"+grade[2] +"건"
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    legend: {
+                        position: 'right'
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltips: {
+                        mode: "nearest",
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: "nearest",
+                        intersect: true
+                    },
+                    scales: {
+                    },
+                    onHover: function(event, data) {
+                        var point = this.getElementAtEvent(event);
+                        event.target.style.cursor = ((point.length > 0) ? "pointer" : "default");
+                    },
+                    onClick: function(event, data) {
+                        if (data !== undefined && data.length > 0) {
+
+                            $("html, body").animate({scrollTop: $(document).height()}, "slow");
+                        }
+                    },
+                }
+            });
+            $("#chart").data("chart", chart);
+        }
+
+    </script>
+</th:block>
+
+
+
+
+</html>

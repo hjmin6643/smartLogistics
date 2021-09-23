@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexmore.smartLogistics.mapper.DeliveryStatusMapper">
+
+    <select id="selectDeliveryStatus" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT NO, STATUS, ADDRESS,
+        DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE = "AUTO"
+        AND DATE_FORMAT(REG_DATE, '%Y-%m-%d') BETWEEN #{startDate} AND #{endDate}
+        ORDER BY REG_DATE DESC
+
+    </select>
+    <select id="selecttrafficStatus" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT NO, STATUS, ADDRESS,
+        DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE = "TRAFFIC"
+        ORDER BY REG_DATE DESC
+
+    </select>
+    <select id="selectroadStatus" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT NO, STATUS, ADDRESS,
+        DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE = "FOLLOW"
+        ORDER BY REG_DATE DESC
+
+    </select>
+    <update id="updateDeliveryDetail" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO">
+        UPDATE DELIVERY_STATUS_DETAIL_TB
+          SET  MOBILE_NO = #{mobileNo},
+           ADDRESS = #{address},
+           STAFF = #{staff},
+            AREA = #{area}
+        WHERE NO = #{no}
+
+    </update>
+    <select id="selectFindNo" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO">
+        SELECT NO, MOBILE_NO, ADDRESS, STAFF, AREA
+        FROM DELIVERY_STATUS_DETAIL_TB
+        WHERE NO = #{no}
+
+    </select>
+    <select id="selectDeliveryInfo" resultType="com.nexmore.smartLogistics.domain.DeliveryInfoDTO" parameterType="com.nexmore.smartLogistics.domain.DeliveryInfoDTO">
+        SELECT NO, CONTENT, STEP,
+                  DATE_FORMAT(PROCESS_DATE, '%Y-%m-%d %H:%i') as PROCESS_DATE
+        FROM DELIVERY_INFO_TB
+        WHERE NO = #{no}
+         ORDER BY PROCESS_DATE DESC
+    </select>
+
+    <insert id="insertDetailDelete" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO">
+        INSERT INTO DELIVERY_DELETE_INFO
+        VALUES (
+        	#{no},
+	    	#{reason},
+	    	#{deleteYn},
+	       now()
+        )
+    </insert>
+
+    <select id="selectDeleteYn" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO">
+        SELECT NO
+        FROM DELIVERY_DELETE_INFO
+        WHERE NO = #{no} and DELETE_YN= "삭제"
+
+    </select>
+
+    <select id="selectDeleteList" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO" parameterType="com.nexmore.smartLogistics.domain.DeliveryStatusDetailDTO">
+        SELECT NO, REASON, DELETE_YN, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as REG_DATE
+        FROM DELIVERY_DELETE_INFO
+        WHERE NO = #{no}
+        ORDER BY REG_DATE DESC
+
+    </select>
+</mapper>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/default" >
+
+
+<th:block layout:fragment="content">
+
+    <div>
+        <h1 style="text-align: center; font-weight:bold; color:#000000; margin-top:35px;">삭제 사유를 입력해주십시오.</h1>
+    </div>
+    <section class="col-xl-auto connectedSortable" style="width:90%; margin-left:5%; margin-top:2%">
+
+        <div class="card card-outline card-gray-dark shadow">
+
+            <div class="card-body">
+                <div class="table-responsive overflow-hidden" >
+
+                    <input style="height: 150px;" type="text" id="reason" class="form-control" value="" />
+
+                </div>
+               <div style="display: inline-block; margin-left: 23%;"><button type="button" style="width:100px; height: 40px; font-size:15px; text-align: center;display: inline-block; background-color: #17a2b8; color:#ffffff;" class="btn btn-sm btn-outline-info" id="deleteButton" onclick="deleteInfo()">확인</button>
+                <button type="button" style="width:100px; height: 40px; margin-left:10px; font-size:15px; text-align: center; display: inline-block; background-color: #17a2b8; color:#ffffff;" class="btn btn-sm btn-outline-info" id="cancel" onclick="cancel()">취소</button>
+               </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="../static/js/dataTables/jquery.dataTables.js"></script>
+    <script src="../static/js/dataTables/jquery.dataTables.min.js" defer></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.buttons.min.js"></script>
+    <script src="../static/js/dataTables/buttons.html5.min.js"></script>
+    <script src="../static/js/dataTables/jszip.min.js"></script>
+    <script src="../static/js/dataTables/dataTables.bootstrap4.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var no = [[${no}]];
+        var deliveryDetailList = [[${deliveryDetailList}]];
+        var deliveryInfoList = [[${deliveryInfoList}]];
+        /*]]>*/
+        var styleObj = {
+            'color': 'black',
+            'background-color' : '#63676a'
+        };
+        $("#kim").addClass("active").css(styleObj);
+        $("#menu").removeClass("menu-open");
+        $("#adminMenu").removeClass("menu-open");
+        console.log("data"+no);
+
+        function deleteInfo() {
+           /* var reason = $("#reason").val();*/
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                data: {
+
+                    no: no,
+                    reason : $("#reason").val()
+                },
+                url: "/delete_status_info",
+                success: function(data) {
+
+                    if(data.result === "success") {
+                        alert("삭제 성공 하였습니다. ");
+                        window.opener.location.reload();
+                        self.close();
+
+                    }else {
+                        alert("삭제 실패 하였습니다. ");
+                        self.close();
+                    }
+
+                }
+            });
+        }
+        function cancel(no) {
+            self.close();
+        }
+    </script>
+</th:block>
+
+
+
+
+</html>

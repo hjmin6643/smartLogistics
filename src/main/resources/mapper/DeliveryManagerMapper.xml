@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexmore.smartLogistics.mapper.DeliveryManagerMapper">
+
+    <select id="selectDeliveryManager" resultType="com.nexmore.smartLogistics.domain.DeliveryManagerDTO">
+        SELECT NO,
+                NAME,
+                AREA,
+                MOBILE_NO as mobileNm,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as regDate
+        FROM DELIVERY_MANAGER_TB
+        ORDER BY REG_DATE DESC
+    </select>
+    <insert id="insertManager" parameterType="com.nexmore.smartLogistics.domain.DeliveryManagerDTO" keyProperty="no">
+        <selectKey order="BEFORE" keyProperty="no" resultType="int">
+            SELECT IFNULL(MAX(CAST(NO AS UNSIGNED)), 0) + 1 FROM DELIVERY_MANAGER_TB
+        </selectKey>
+        INSERT INTO DELIVERY_MANAGER_TB (
+        NO,
+        NAME,
+        MOBILE_NO,
+        AREA,
+        REG_DATE
+        ) VALUES (
+        #{no},
+        #{name},
+        #{mobileNm},
+        #{area},
+        now()
+        )
+    </insert>
+</mapper>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nexmore.smartLogistics.mapper.DeliveryMapMapper">
+
+    <select id="selectDeliveryMap" resultType="com.nexmore.smartLogistics.domain.DeliveryMapDTO">
+        SELECT NO,
+                TYPE,
+                ADDRESS,
+                TYPE,
+                LATITUDE AS LAT,
+                LONGITUDE AS LON,
+                DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') as regDate
+        FROM DELIVERY_MAP_TB
+        WHERE TYPE IN ('AUTO','FOLLOW','DRON')
+    </select>
+
+    <select id="selectKimcheonChart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='AUTO'
+        GROUP BY STATUS
+
+    </select>
+
+    <select id="selectAllChart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+
+    </select>
+    <select id="selectAllChartList" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        GROUP BY STATUS
+
+    </select>
+    <select id="selectkimcheonChart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT, TYPE
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='AUTO'
+
+    </select>
+
+    <select id="selectroadChart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='FOLLOW'
+         GROUP BY STATUS
+    </select>
+    <select id="selectroadAll" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='FOLLOW'
+
+    </select>
+
+    <select id="selectgreenChart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='GREEN'
+        GROUP BY STATUS
+    </select>
+
+    <select id="selectgreenAll" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='GREEN'
+
+    </select>
+    <select id="selectTraffic" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='TRAFFIC'
+        GROUP BY STATUS
+    </select>
+
+    <select id="selectTrafficAll" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='TRAFFIC'
+
+    </select>
+    <select id="selectApart" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='APART'
+        GROUP BY STATUS
+    </select>
+    <select id="selectApartAll" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='APART'
+
+    </select>
+    <select id="selectOffice" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(STATUS) AS COUNT, STATUS
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='OFFICE'
+        GROUP BY STATUS
+    </select>
+    <select id="selectOfficeAll" resultType="com.nexmore.smartLogistics.domain.DeliveryStatusDTO">
+        SELECT COUNT(*) AS COUNT
+        FROM DELIVERY_STATUS_TB
+        WHERE TYPE='OFFICE'
+
+    </select>
+</mapper>

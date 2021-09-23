@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+    <head>
+
+        <th:block th:include="include/header"> </th:block>
+        <!--suppress ThymeleafVariablesResolveInspection -->
+        <title th:text="|Smart Logistics System - ${title}|"></title>
+    </head>
+    <body id="pageBody" class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+        <div id="loading" class="custom-loading">
+            <div class="text-center">
+
+            </div>
+        </div>
+        <div id="wrapper" class="wrapper">
+           <!-- <th:block th:include="include/top"> </th:block>-->
+            <th:block th:include="include/left"> </th:block>
+            <div id="content-wrapper" class="content-wrapper">
+                <th:block layout:fragment="content"> </th:block>
+            </div>
+            <footer class="main-footer d-none"><!--d-md-block-->
+                <button type="button" class="btn btn-sm btn-info mr-3" onclick="$(this).parent('footer').removeClass('d-md-block');">숨김</button>
+                <strong>COPYRIGHT&copy; BY NEXMORESYSTEMS INC. ALL RIGHTS RESERVED</strong>
+                <div class="float-right d-none d-md-inline-block">
+                    <b>Version</b> 1.0.0
+                </div>
+            </footer>
+        </div>
+        <th:block th:include="include/footer"> </th:block>
+    </body>
+</html>
